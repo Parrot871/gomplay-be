@@ -44,7 +44,7 @@ public class ActiveMatchResponse {
 
     public static ActiveMatchResponse ofGathering(
             Gathering gathering, UserProfile me, UserProfile partner,
-            long pendingCount, boolean reviewed, boolean iCompleted) {
+            long pendingCount, boolean reviewed, boolean iCompleted, Long chatRoomId) {
 
         boolean isHost = gathering.getHost().getId().equals(me.getId());
 
@@ -66,7 +66,7 @@ public class ActiveMatchResponse {
         res.scheduledTime = formatScheduledTime(gathering.getScheduledAt(), gathering.getScheduledEndAt());
         res.difficulty = gathering.getDifficulty();
         res.sportType = gathering.getSportType();
-        res.chatRoomId = null;
+        res.chatRoomId = chatRoomId;
         res.matchedAt = null;
         res.pendingCount = pendingCount;
         res.reviewed = reviewed;

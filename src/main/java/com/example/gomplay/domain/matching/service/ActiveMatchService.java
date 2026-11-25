@@ -70,7 +70,8 @@ public class ActiveMatchService {
                             .findByGathering_IdAndUser_Id(gathering.getId(), me.getId())
                             .map(GatheringParticipant::isCompleted)
                             .orElse(false);
-                    result.add(ActiveMatchResponse.ofGathering(gathering, me, partner, pendingCount, reviewed, iCompleted));
+                    Long chatRoomId = findGroupChatRoomId(gathering);
+                    result.add(ActiveMatchResponse.ofGathering(gathering, me, partner, pendingCount, reviewed, iCompleted, chatRoomId));
                 });
 
         // GATHERING - 내가 ACCEPTED 참여자인 OPEN 모집글 (본인이 HOST인 경우 제외)
@@ -85,7 +86,8 @@ public class ActiveMatchService {
                     boolean reviewed = reviewRepository
                             .existsByReviewer_IdAndGatheringId(me.getId(), gathering.getId());
                     boolean iCompleted = participant.isCompleted();
-                    result.add(ActiveMatchResponse.ofGathering(gathering, me, gathering.getHost(), pendingCount, reviewed, iCompleted));
+                    Long chatRoomId = findGroupChatRoomId(gathering);
+                    result.add(ActiveMatchResponse.ofGathering(gathering, me, gathering.getHost(), pendingCount, reviewed, iCompleted, chatRoomId));
                 });
 
         // GATHERING - 내가 PENDING 신청자인 OPEN 모집글
@@ -119,6 +121,12 @@ public class ActiveMatchService {
                 });
 
         return result;
+    }
+
+    private Long findGroupChatRoomId(Gathering gathering) {
+        return groupChatRoomRepository.findByGathering_Id(gathering.getId())
+                .map(room -> room.getId())
+                .orElse(null);
     }
 
     @Transactional(readOnly = true)
